@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
-load_dotenv()  # MUST be first — loads env vars before anything uses them
-
+load_dotenv()
 from pydantic import BaseModel, Field
 from typing import Type, List
 from crewai.tools import BaseTool
@@ -9,18 +8,25 @@ import chromadb
 import cohere
 import os
 import uuid
+from chromadb.utils.embedding_functions import CohereEmbeddingFunction
 
 # ── Cohere client (reranker) ──────────────────────────────────────────────────
 cohere_client = cohere.Client(os.environ.get("COHERE_API_KEY"))
 
-# ── ChromaDB — free local embeddings (all-MiniLM-L6-v2 auto) ─────────────────
-chroma_client = chromadb.PersistentClient(path="./market_research_db")
+# ── Cohere Embedding Function ─────────────────────────────────────────────────
+embedding_fn = CohereEmbeddingFunction(
+    api_key=os.environ.get("COHERE_API_KEY"),
+    model_name="embed-english-v3.0"
+)
+
+# ── ChromaDB client  ──────────────────────────────────────────────────────────
+chroma_client = chromadb.PersistentClient(path="./market_research_db")  # ← YOU WERE MISSING THIS
 
 collection = chroma_client.get_or_create_collection(
     name="market_research_reports",
-    metadata={"hnsw:space": "cosine"}
+    metadata={"hnsw:space": "cosine"},
+    embedding_function=embedding_fn
 )
-
 
 # ── Helper: chunk long text ───────────────────────────────────────────────────
 
