@@ -1,7 +1,24 @@
-from crewai import Agent, Crew, Process, Task
+from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import SerperDevTool, SeleniumScrapingTool, ScrapeWebsiteTool
 from .tools.custom_tool import StoreReportTool, RAGRetrievalTool, make_store_callback
+import os
+
+# ── LLM with retry + timeout — survives 503 overload bursts ──────────────────
+# num_retries: LiteLLM will retry up to 10x with exponential backoff on 429/503
+# timeout:     give the model 120s to respond before giving up
+_model_name = os.environ.get("MODEL", "groq/openai/gpt-oss-120b")
+_api_key = os.environ.get("GROQ_API_KEY") if "groq" in _model_name else (
+    os.environ.get("GEMINI_API_KEY") or os.environ.get("OPENAI_API_KEY")
+)
+
+_llm = LLM(
+    model=_model_name,
+    api_key=_api_key,
+    temperature=0,
+    num_retries=10,
+    timeout=120,
+)
 
 search_tool          = SerperDevTool()
 store_tool           = StoreReportTool()
@@ -22,41 +39,51 @@ class MarketResearchCrew:
     @agent
     def market_research_analyst(self) -> Agent:
         return Agent(
-            config=self.agents_config["market_research_analyst"],
+            config=self.agents_config["market_research_analyst"],  # type: ignore[index]
+            llm=_llm,
             tools=tool_kit,
             verbose=True,
+            max_retry_limit=5,
         )
 
     @agent
     def competitor_researcher(self) -> Agent:
         return Agent(
-            config=self.agents_config["competitor_researcher"],
+            config=self.agents_config["competitor_researcher"],  # type: ignore[index]
+            llm=_llm,
             tools=tool_kit,
             verbose=True,
+            max_retry_limit=5,
         )
 
     @agent
     def customer_researcher(self) -> Agent:
         return Agent(
-            config=self.agents_config["customer_researcher"],
+            config=self.agents_config["customer_researcher"],  # type: ignore[index]
+            llm=_llm,
             tools=tool_kit,
             verbose=True,
+            max_retry_limit=5,
         )
 
     @agent
     def product_researcher(self) -> Agent:
         return Agent(
-            config=self.agents_config["product_researcher"],
+            config=self.agents_config["product_researcher"],  # type: ignore[index]
+            llm=_llm,
             tools=tool_kit,
             verbose=True,
+            max_retry_limit=5,
         )
 
     @agent
     def business_analyst(self) -> Agent:
         return Agent(
-            config=self.agents_config["business_analyst"],
+            config=self.agents_config["business_analyst"],  # type: ignore[index]
+            llm=_llm,
             tools=[rag_tool],
             verbose=True,
+            max_retry_limit=5,
         )
 
     # ── Tasks — callback here, NOT on agent ───────────────────────────────────
@@ -105,4 +132,5 @@ class MarketResearchCrew:
             tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
+            max_rpm=3,   # Conservative pacing — avoids hammering overloaded 503 model
         )

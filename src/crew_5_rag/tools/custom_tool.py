@@ -10,25 +10,40 @@ import os
 import uuid
 from chromadb.utils.embedding_functions import CohereEmbeddingFunction
 
-# ── Cohere client (reranker) ──────────────────────────────────────────────────
+# ── Cohere client (reranker)
 cohere_client = cohere.Client(os.environ.get("COHERE_API_KEY"))
 
-# ── Cohere Embedding Function ─────────────────────────────────────────────────
+#  Cohere Embedding Function 
 embedding_fn = CohereEmbeddingFunction(
     api_key=os.environ.get("COHERE_API_KEY"),
     model_name="embed-english-v3.0"
 )
 
-# ── ChromaDB client  ──────────────────────────────────────────────────────────
+#  ChromaDB client 
 chroma_client = chromadb.PersistentClient(path="./market_research_db")  # ← YOU WERE MISSING THIS
 
-collection = chroma_client.get_or_create_collection(
-    name="market_research_reports",
-    metadata={"hnsw:space": "cosine"},
-    embedding_function=embedding_fn
-)
+try:
+    collection = chroma_client.get_or_create_collection(
+        name="market_research_reports",
+        metadata={"hnsw:space": "cosine"},
+        embedding_function=embedding_fn
+    )
+except Exception as _emb_conflict:
+    # Stale collection was created with a different embedding function.
+    # Newer ChromaDB versions may raise a generic Exception (not just ValueError).
+    # Delete it and recreate with Cohere so subsequent runs work cleanly.
+    print(f"[ChromaDB] Embedding conflict detected — recreating collection. ({_emb_conflict})")
+    try:
+        chroma_client.delete_collection("market_research_reports")
+    except Exception as _del_err:
+        print(f"[ChromaDB] Warning: could not delete collection: {_del_err}")
+    collection = chroma_client.get_or_create_collection(
+        name="market_research_reports",
+        metadata={"hnsw:space": "cosine"},
+        embedding_function=embedding_fn
+    )
 
-# ── Helper: chunk long text ───────────────────────────────────────────────────
+# ── Helper: chunk long text 
 
 def chunk_text(text: str, chunk_size: int = 500, overlap: int = 50) -> List[str]:
     """Split text into overlapping chunks so context is not lost at boundaries."""
@@ -43,9 +58,8 @@ def chunk_text(text: str, chunk_size: int = 500, overlap: int = 50) -> List[str]
     return chunks
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+
 # TOOL 1 — Store Report in Vector DB
-# ─────────────────────────────────────────────────────────────────────────────
 
 class StoreReportInput(BaseModel):
     report: str = Field(
@@ -107,9 +121,9 @@ class StoreReportTool(BaseTool):
             return f" Failed to store report: {str(e)}"
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+
 # TOOL 2 — RAG Retrieval Tool with Cohere Reranker
-# ─────────────────────────────────────────────────────────────────────────────
+
 
 class RAGRetrievalInput(BaseModel):
     query: str = Field(
@@ -152,7 +166,7 @@ class RAGRetrievalTool(BaseTool):
 
     def _run(self, query: str, agent_filter: str = "all", top_k: int = 5) -> str:
         try:
-            # ── Step 1: Semantic search in ChromaDB ───────────────────────
+            #  Step 1: Semantic search in ChromaDB 
             where_filter = (
                 {"agent": agent_filter}
                 if agent_filter != "all"
@@ -172,7 +186,7 @@ class RAGRetrievalTool(BaseTool):
             if not raw_chunks:
                 return "No relevant information found in the vector database for this query."
 
-            # ── Step 2: Rerank with Cohere ────────────────────────────────
+            #  Step 2: Rerank with Cohere 
             rerank_response = cohere_client.rerank(
                 model="rerank-english-v3.0",
                 query=query,
@@ -180,7 +194,7 @@ class RAGRetrievalTool(BaseTool):
                 top_n=3
             )
 
-            # ── Step 3: Build clean output ────────────────────────────────
+            # Step 3: Build clean output
             output_lines = [
                 f" Query: {query}\n",
                 f" Top {len(rerank_response.results)} reranked results:\n",
@@ -207,9 +221,8 @@ class RAGRetrievalTool(BaseTool):
             return f" RAG retrieval failed: {str(e)}"
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 # CALLBACK — Force store if agent forgot to call store tool
-# ─────────────────────────────────────────────────────────────────────────────
+
 
 def make_store_callback(agent_name: str):
     """Safety net — force stores task output in ChromaDB if agent forgot."""
@@ -217,7 +230,7 @@ def make_store_callback(agent_name: str):
         existing = collection.get(where={"agent": agent_name})
 
         if existing["ids"]:
-            print(f"✅ [{agent_name}] already stored — skipping.")
+            print(f"[{agent_name}] already stored — skipping.")
             return
 
         print(f"[{agent_name}] missed storing — force storing now...")
