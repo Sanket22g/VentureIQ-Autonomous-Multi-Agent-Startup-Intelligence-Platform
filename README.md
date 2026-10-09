@@ -138,24 +138,6 @@ Runs the sequential multi-agent pipeline in your terminal and generates `final_r
 
 ---
 
-## 🖼️ How to Add or Change Images in this README
-
-We have created an **`assets/`** folder in the root directory for your images.
-
-### Step 1: Save Your Images
-Save your image files into the `assets/` folder:
-- **Dashboard screenshot**: save as `assets/dashboard.png`
-- **Architecture diagram**: save as `assets/architecture.png`
-
-### Step 2: Push to GitHub
-```bash
-git add assets/
-git commit -m "docs: add dashboard and architecture screenshots"
-git push origin main
-```
-Your images will immediately display on your GitHub repository page!
-
----
 
 ## 🛠️ Tech Stack & Integrations
 
