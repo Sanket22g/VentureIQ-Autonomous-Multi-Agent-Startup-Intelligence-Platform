@@ -1,0 +1,55 @@
+name: Application Build & Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "frontend/**"
+      - "knowledge/**"
+      - "Dockerfile"
+      - "pyproject.toml"
+      - "uv.lock"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: Build, Push & Deploy to ECS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'ap-south-1' }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, Tag & Push Docker Image to Amazon ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ vars.ECR_REPOSITORY || 'ventureiq-app' }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker tag $REGISTRY/$REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:latest
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker push $REGISTRY/$REPOSITORY:latest
+
+      - name: Refresh ECS Service (Force New Deployment)
+        run: |
+          aws ecs update-service \
+            --cluster ${{ vars.ECS_CLUSTER || 'ventureiq-cluster' }} \
+            --service ${{ vars.ECS_SERVICE || 'ventureiq-service' }} \
+            --force-new-deployment \
+            --region ${{ vars.AWS_REGION || 'ap-south-1' }}

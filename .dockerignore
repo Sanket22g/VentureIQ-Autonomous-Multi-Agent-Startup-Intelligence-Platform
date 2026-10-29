@@ -1,0 +1,34 @@
+# Version control & internal IDE dirs
+.git/
+.gitignore
+.agents/
+.gemini/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python cache & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+tests/
+
+# Local sensitive configuration
+.env
+*.env.local
+terraform.tfstate*
+*.tfvars
+
+# Local dynamic runtime outputs & database caches
+market_research_db/
+final_report*.md
+assets/*.png
+assets/*.jpg
+
+# Documentation & scratch files
+*.log
+scratch/
