@@ -1,6 +1,6 @@
 # ==============================================================================
 # VentureIQ — Production Multi-Agent Intelligence Platform
-# Containerized Streamlit + CrewAI Application
+# Containerized Streamlit + CrewAI Application (v1.0.0 Production Release)
 # ==============================================================================
 
 FROM python:3.11-slim
