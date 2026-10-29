@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
 
 # ðŸš€ VentureIQ
 ### Autonomous Multi-Agent Startup Intelligence & Cloud Delivery Platform
