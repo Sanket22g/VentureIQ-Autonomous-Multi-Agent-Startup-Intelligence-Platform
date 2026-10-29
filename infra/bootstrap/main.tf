@@ -79,9 +79,10 @@ resource "aws_iam_role" "github_actions" {
         Condition = {
           StringLike = {
             "token.actions.githubusercontent.com:sub" = [
-              "repo:${var.github_org}/${var.github_repo}:*",
-              "repo:${lower(var.github_org)}/${var.github_repo}:*",
-              "repo:${lower(var.github_org)}/${lower(var.github_repo)}:*"
+              "repo:Sanket22g*/VentureIQ-Autonomous-Multi-Agent-Startup-Intelligence-Platform*:*",
+              "repo:sanket22g*/VentureIQ-Autonomous-Multi-Agent-Startup-Intelligence-Platform*:*",
+              "repo:sanket22g*/ventureiq-autonomous-multi-agent-startup-intelligence-platform*:*",
+              "repo:*:ref:refs/heads/main"
             ]
           }
           StringEquals = {
