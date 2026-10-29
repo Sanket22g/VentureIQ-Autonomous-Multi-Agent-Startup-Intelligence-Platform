@@ -16,7 +16,7 @@
 <br/>
 
 <p align="center">
-  <img src="assets/dashboard.png" alt="VentureIQ Platform Dashboard" width="850" />
+  <img src="assets/live_app.png" alt="VentureIQ Platform — Live on AWS ALB" width="850" />
 </p>
 
 <p align="center">
@@ -305,9 +305,19 @@ terraform destroy -auto-approve
 
 ---
 
-## 🎯 DevOps & Cloud Interview Guide (Q&A)
+## 📊 CloudWatch Logs — Live Container Observability
 
-Here are the most common and challenging questions technical interviewers (AWS / DevOps / Cloud Architect / GenAI Engineer) will ask about this architecture, along with high-impact answers:
+All Streamlit and CrewAI agent execution logs are streamed directly to **AWS CloudWatch Log Group `/ecs/ventureiq`** with 14-day automated retention. This gives full real-time visibility into agent reasoning chains, errors, and LLM API calls without needing to exec into the container.
+
+<p align="center">
+  <img src="assets/cloudwatch.png" alt="AWS CloudWatch Logs for ECS VentureIQ" width="850" />
+</p>
+
+---
+
+<div align="center">
+  <b>Built with ❤️ by Sanket Ghadge</b>
+</div>
 
 ---
 
