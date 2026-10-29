@@ -1,6 +1,6 @@
 <div align="center">
 
-# ðŸš€ VentureIQ
+# 🚀 VentureIQ
 ### Autonomous Multi-Agent Startup Intelligence & Cloud Delivery Platform
 **End-to-End Delivery Flow: From Multi-Agent Architecture to Containerized AWS ECS Fargate via GitHub Actions CI/CD**
 
@@ -16,7 +16,7 @@
 <br/>
 
 <p align="center">
-  <img src="assets/live_app.png" alt="VentureIQ Platform â€” Live on AWS ALB" width="850" />
+  <img src="assets/live_app.png" alt="VentureIQ Platform — Live on AWS ALB" width="850" />
 </p>
 
 <p align="center">
@@ -27,7 +27,7 @@
 
 ---
 
-## ðŸ“‘ Table of Contents
+## 📑 Table of Contents
 1. [Overview & Core Value](#-overview--core-value)
 2. [End-to-End Architecture Flow](#-end-to-end-architecture-flow)
 3. [Multi-Agent Swarm (AI Engine)](#-multi-agent-swarm-ai-engine)
@@ -35,31 +35,32 @@
 5. [Keyless CI/CD Pipeline (GitHub Actions + OIDC)](#-keyless-cicd-pipeline-github-actions--oidc)
 6. [Repository Structure](#-repository-structure)
 7. [Deployment & Operations Guide](#-deployment--operations-guide)
-8. [ðŸŽ¯ DevOps & Cloud Interview Guide (Q&A)](#-devops--cloud-interview-guide-qa)
+8. [📊 CloudWatch Observability](#-cloudwatch-logs--live-container-observability)
+9. [📄 Real Agent Output Sample](#-real-agent-output---sample-report)
 
 ---
 
-## ðŸ“Œ Overview & Core Value
+## 📌 Overview & Core Value
 
 **VentureIQ** is an autonomous multi-agent intelligence platform that automates venture due diligence, market validation, and competitive research for founders, venture capital analysts, and strategy teams.
 
-Instead of spending **30â€“50 hours** manually researching market sizing, scraping competitor landing pages, reviewing user forums, and building financial assumptions, **VentureIQ coordinates a swarm of 5 specialized AI agents** that iteratively research, cross-examine, persist findings in a vector database, and synthesize an investor-grade **8-section Master Business Analysis Report**.
+Instead of spending **30–50 hours** manually researching market sizing, scraping competitor landing pages, reviewing user forums, and building financial assumptions, **VentureIQ coordinates a swarm of 5 specialized AI agents** that iteratively research, cross-examine, persist findings in a vector database, and synthesize an investor-grade **8-section Master Business Analysis Report**.
 
 The platform is containerized and delivered as a **production-grade AWS microservice** with complete infrastructure-as-code automation and zero-downtime deployment pipelines.
 
 ---
 
-## ðŸ—ï¸ End-to-End Architecture Flow
+## 🏗️ End-to-End Architecture Flow
 
 ### 1. Cloud Infrastructure & User Traffic Flow
 ```mermaid
 flowchart TD
-    subgraph Internet ["ðŸŒ Public Internet"]
+    subgraph Internet ["🌐 Public Internet"]
         User["User Browser / Founder"]
         GH["GitHub Actions Runners"]
     end
 
-    subgraph AWS ["â˜ï¸ Amazon Web Services (ap-south-1)"]
+    subgraph AWS ["☁️ Amazon Web Services (ap-south-1)"]
         subgraph PublicSubnets ["Public Subnets (AZ-a & AZ-b)"]
             ALB["Application Load Balancer (Port 80)\nIdle Timeout: 600s | Session Stickiness"]
             NAT["NAT Gateway (Outbound Internet for Tasks)"]
@@ -96,7 +97,7 @@ flowchart TD
 
 ---
 
-## ðŸ¤– Multi-Agent Swarm (AI Engine)
+## 🤖 Multi-Agent Swarm (AI Engine)
 
 VentureIQ implements a **Store-and-Summary multi-agent design pattern** to prevent context window explosion across sequential workflows:
 
@@ -143,20 +144,20 @@ sequenceDiagram
 | **2. Competitor Researcher** | Competitive intelligence & gaps | Serper Search, ScrapeWebsiteTool, RAG | Direct/indirect competitor matrix, feature flaws, pricing gaps. |
 | **3. Customer Researcher** | Personas & buyer psychology | Serper Search, ScrapeWebsiteTool, RAG | ICP personas, top 5 verified pain points, willingness-to-pay tiers. |
 | **4. Product Researcher** | Technical specification & MVP | Serper Search, ScrapeWebsiteTool, RAG | MoSCoW MVP feature scope, architecture stack, 3-phase roadmap. |
-| **5. Business Analyst** | Due diligence & investment thesis | Cohere Reranked Semantic RAG | Master 8-section investor brief, SWOT, unit economics, viability score (1â€“10). |
+| **5. Business Analyst** | Due diligence & investment thesis | Cohere Reranked Semantic RAG | Master 8-section investor brief, SWOT, unit economics, viability score (1–10). |
 
 ---
 
-## â˜ï¸ Cloud Infrastructure (Terraform & AWS)
+## ☁️ Cloud Infrastructure (Terraform & AWS)
 
 The infrastructure is written entirely in **Terraform (HCL)** and split into two isolated modules:
 
-### 1. `infra/bootstrap/` â€” Remote State & Identity Foundation
+### 1. `infra/bootstrap/` — Remote State & Identity Foundation
 * **S3 Remote State Backend**: Provisions encrypted state bucket `ventureiq-tf-state-060002399291` with versioning and AES-256 server-side encryption.
 * **GitHub Actions OIDC Provider**: Configures AWS OpenID Connect trust (`token.actions.githubusercontent.com`) for keyless authentication.
 * **IAM Role (`ventureiq-github-actions-role`)**: Dynamically assumed by GitHub workflows based on repository subject claims (`repo:Sanket22g*/VentureIQ*:*`).
 
-### 2. `infra/app/` â€” Production Application Architecture
+### 2. `infra/app/` — Production Application Architecture
 * **Virtual Private Cloud (VPC)**:
   - CIDR: `10.0.0.0/16` deployed across 2 Availability Zones (`ap-south-1a`, `ap-south-1b`).
   - 2 Public subnets (`10.0.1.0/24`, `10.0.2.0/24`) for Load Balancers and NAT.
@@ -183,7 +184,7 @@ The infrastructure is written entirely in **Terraform (HCL)** and split into two
 
 ---
 
-## ðŸ”„ Keyless CI/CD Pipeline (GitHub Actions + OIDC)
+## 🔄 Keyless CI/CD Pipeline (GitHub Actions + OIDC)
 
 Instead of storing permanent AWS access keys in GitHub Secrets, VentureIQ implements **short-lived, keyless OIDC authentication**:
 
@@ -216,47 +217,47 @@ sequenceDiagram
 
 ---
 
-## ðŸ“‚ Repository Structure
+## 📂 Repository Structure
 
 ```
 VentureIQ/
-â”œâ”€â”€ .github/
-â”‚   â””â”€â”€ workflows/
-â”‚       â”œâ”€â”€ deploy.yaml              # Builds Docker image, pushes to ECR, updates ECS
-â”‚       â”œâ”€â”€ infra.yaml               # Terraform fmt, validate, plan, apply on infra/app
-â”‚       â””â”€â”€ destroy.yaml             # Teardown workflow to stop AWS billing
-â”œâ”€â”€ frontend/
-â”‚   â”œâ”€â”€ .streamlit/config.toml       # Streamlit UI & theme configurations
-â”‚   â”œâ”€â”€ app.py                       # Interactive analytics dashboard & telemetry
-â”‚   â””â”€â”€ requirements.txt             # Lightweight frontend dependencies
-â”œâ”€â”€ infra/
-â”‚   â”œâ”€â”€ bootstrap/                   # S3 state bucket & GitHub Actions OIDC role
-â”‚   â”‚   â”œâ”€â”€ main.tf
-â”‚   â”‚   â”œâ”€â”€ variables.tf
-â”‚   â”‚   â””â”€â”€ outputs.tf
-â”‚   â””â”€â”€ app/                         # VPC, ALB, ECR, ECS Fargate, SSM, CloudWatch
-â”‚       â”œâ”€â”€ main.tf
-â”‚       â”œâ”€â”€ variables.tf
-â”‚       â””â”€â”€ outputs.tf
-â”œâ”€â”€ src/
-â”‚   â””â”€â”€ crew_5_rag/
-â”‚       â”œâ”€â”€ config/
-â”‚       â”‚   â”œâ”€â”€ agents.yaml          # Agent roles, goals, and backstories
-â”‚       â”‚   â””â”€â”€ tasks.yaml           # Sequential task definitions & expected outputs
-â”‚       â”œâ”€â”€ tools/
-â”‚       â”‚   â””â”€â”€ custom_tool.py       # ChromaDB store & Cohere reranking RAG tools
-â”‚       â”œâ”€â”€ crew.py                  # CrewBase orchestration & tool bindings
-â”‚       â””â”€â”€ main.py                  # CLI pipeline entry point
-â”œâ”€â”€ Dockerfile                       # Multi-stage Astral uv + Python 3.11-slim image
-â”œâ”€â”€ .dockerignore                    # Excludes .git, .env, .venv, local caches
-â”œâ”€â”€ pyproject.toml                   # Project dependencies and packaging
-â”œâ”€â”€ uv.lock                          # Deterministic dependency lockfile
-â””â”€â”€ README.md                        # Documentation
+├── .github/
+│   └── workflows/
+│       ├── deploy.yaml              # Builds Docker image, pushes to ECR, updates ECS
+│       ├── infra.yaml               # Terraform fmt, validate, plan, apply on infra/app
+│       └── destroy.yaml             # Teardown workflow to stop AWS billing
+├── frontend/
+│   ├── .streamlit/config.toml       # Streamlit UI & theme configurations
+│   ├── app.py                       # Interactive analytics dashboard & telemetry
+│   └── requirements.txt             # Lightweight frontend dependencies
+├── infra/
+│   ├── bootstrap/                   # S3 state bucket & GitHub Actions OIDC role
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   └── app/                         # VPC, ALB, ECR, ECS Fargate, SSM, CloudWatch
+│       ├── main.tf
+│       ├── variables.tf
+│       └── outputs.tf
+├── src/
+│   └── crew_5_rag/
+│       ├── config/
+│       │   ├── agents.yaml          # Agent roles, goals, and backstories
+│       │   └── tasks.yaml           # Sequential task definitions & expected outputs
+│       ├── tools/
+│       │   └── custom_tool.py       # ChromaDB store & Cohere reranking RAG tools
+│       ├── crew.py                  # CrewBase orchestration & tool bindings
+│       └── main.py                  # CLI pipeline entry point
+├── Dockerfile                       # Multi-stage Astral uv + Python 3.11-slim image
+├── .dockerignore                    # Excludes .git, .env, .venv, local caches
+├── pyproject.toml                   # Project dependencies and packaging
+├── uv.lock                          # Deterministic dependency lockfile
+└── README.md                        # Documentation
 ```
 
 ---
 
-## ðŸš€ Deployment & Operations Guide
+## 🚀 Deployment & Operations Guide
 
 ### 1. Prerequisites
 * AWS Account with an IAM administrative user configured locally (`aws configure`).
@@ -272,7 +273,7 @@ terraform apply -auto-approve
 *Outputs: `state_bucket_name` and `github_actions_role_arn`.*
 
 ### 3. Step 2: Configure GitHub Secrets
-In your GitHub repo under **Settings âž” Secrets and variables âž” Actions âž” Secrets**, add:
+In your GitHub repo under **Settings ➔ Secrets and variables ➔ Actions ➔ Secrets**, add:
 * `AWS_ROLE_ARN`: Output from bootstrap (e.g. `arn:aws:iam::060002399291:role/ventureiq-github-actions-role`)
 * `GROQ_API_KEY`: Primary LLM API key
 * `SERPER_API_KEY`: Google Search API key
@@ -305,14 +306,13 @@ terraform destroy -auto-approve
 
 ---
 
-##  CloudWatch Logs Live Container Observability
+## 📊 CloudWatch Logs — Live Container Observability
 
 All Streamlit and CrewAI agent execution logs are streamed directly to **AWS CloudWatch Log Group `/ecs/ventureiq`** with 14-day automated retention. This gives full real-time visibility into agent reasoning chains, errors, and LLM API calls without needing to exec into the container.
 
 <p align="center">
   <img src="assets/cloudwatch.png" alt="AWS CloudWatch Logs for ECS VentureIQ" width="850" />
 </p>
-
 
 ---
 
@@ -392,8 +392,9 @@ The proposed business model is a **freemium offering transitioning to a tiered S
 
 </details>
 
+
 ---
 
 <div align="center">
-  <b>Built with love by Sanket Ghadge</b>
+  <b>Built with ❤️ by Sanket Ghadge</b>
 </div>
