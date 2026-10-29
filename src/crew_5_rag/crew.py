@@ -1,6 +1,6 @@
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
-from crewai_tools import SerperDevTool, SeleniumScrapingTool, ScrapeWebsiteTool
+from crewai_tools import SerperDevTool, ScrapeWebsiteTool
 from .tools.custom_tool import StoreReportTool, RAGRetrievalTool, make_store_callback
 import os
 
@@ -20,13 +20,12 @@ _llm = LLM(
     timeout=120,
 )
 
-search_tool          = SerperDevTool()
-store_tool           = StoreReportTool()
-rag_tool             = RAGRetrievalTool()
-web_scrape_tool      = ScrapeWebsiteTool()
-web_scrape_selenium  = SeleniumScrapingTool()
+search_tool     = SerperDevTool()
+store_tool      = StoreReportTool()
+rag_tool        = RAGRetrievalTool()
+web_scrape_tool = ScrapeWebsiteTool()
 
-tool_kit = [search_tool, store_tool, rag_tool, web_scrape_tool, web_scrape_selenium]
+tool_kit = [search_tool, store_tool, rag_tool, web_scrape_tool]
 
 @CrewBase
 class MarketResearchCrew:
